@@ -1,0 +1,25 @@
+nginx:
+  image: "nginx:1.9"
+  ports:
+    - 5043:443
+  links:
+    - registry:registry
+  volumes:
+    - ./auth:/etc/nginx/conf.d
+    - ./auth/nginx.conf:/etc/nginx/nginx.conf:ro
+
+registry:
+  image: registry:2
+  ports:
+    - 192.168.33.10:5000:5000
+  volumes:
+    - ./data:/var/lib/registry
+    - /opt/docker/registry/auth:/auth
+    - /opt/docker/registry/certs:/certs
+  environment:
+    - REGISTRY_AUTH=htpasswd
+    - REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm
+    - REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd 
+    - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt 
+    - REGISTRY_HTTP_TLS_KEY=/certs/domain.key
+
